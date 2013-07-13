@@ -35,3 +35,22 @@ def get_thermostat(host_address=None):
     thermostat_class = get_thermostat_class(model)
     if thermostat_class is not None:
         return thermostat_class(host_address)
+
+def get_thermostats():
+    """
+    :returns:   returns all thermostats discovered on the network
+    """
+    thermostats = []
+    
+    addresses = discover.discover_addresses()
+    
+    for host_address in addresses:
+        initial = CommonThermostat(host_address)
+        model = initial.model.get('raw')
+        thermostat_class = get_thermostat_class(model)
+        if thermostat_class is not None:
+            thermostat = thermostat_class(host_address)
+            thermostats.append(thermostat)
+
+    return thermostats
+

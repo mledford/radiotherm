@@ -5,8 +5,10 @@ IP_ADDRESS = '239.255.255.250'
 PORT = 1900
 MESSAGE = """TYPE: WM-DISCOVER\r\nVERSION: 1.0\r\n\r\nservices: com.marvell.wm.system*\r\n\r\n""".encode('utf-8')
 
-def discover_address():
+def discover_addresses():
     """
+    Returns all thermostats discovered on the network.
+    
     The example discovery program provided by Radio Thermostat sets the IP packet's
     TTL to 3. I'm not sure why that would be a good idea, because the default value
     of 1 (in the case of multicast) seems reasonable. I'm content to say that this
@@ -33,11 +35,19 @@ def discover_address():
             except socket.timeout:
                 break
 
-        if len(thermostats) == 0:
-            raise IOError('No thermostats were found')
-        if len(thermostats) > 1:
-            raise IOError("Found %d thermostats and I don't know which to pick." % len(thermostats))
-        return thermostats[0]
+        return thermostats
+
+def discover_address():
+    """
+    Returns if only a single thermostat was found on the network.
+    """
+    thermostats = discover_addresses()
+    
+    if len(thermostats) == 0:
+        raise IOError('No thermostats were found')
+    if len(thermostats) > 1:
+        raise IOError("Found %d thermostats and I don't know which to pick." % len(thermostats))
+    
 
 class ExitingSocket(socket.socket):
     """
